@@ -1,0 +1,12 @@
+#!/bin/sh
+# Copies stdin to the system clipboard with whichever tool this machine has.
+# Zellij runs it as its copy_command, because GNOME Terminal ignores OSC 52.
+if [ -n "$WAYLAND_DISPLAY" ] && command -v wl-copy >/dev/null 2>&1; then
+  exec wl-copy
+elif [ -n "$DISPLAY" ] && command -v xclip >/dev/null 2>&1; then
+  exec xclip -selection clipboard
+elif command -v pbcopy >/dev/null 2>&1; then
+  exec pbcopy
+fi
+echo "copy-to-clipboard: no clipboard tool found (install wl-clipboard or xclip)" >&2
+exit 1
